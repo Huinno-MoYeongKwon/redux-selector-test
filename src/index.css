@@ -1,0 +1,141 @@
+@import "tailwindcss";
+
+@theme {
+  /* Modern Minimal - Light */
+  --color-background: #fafafa;
+  --color-foreground: #18181b;
+  --color-card: #ffffff;
+  --color-card-foreground: #18181b;
+  --color-primary: #18181b;
+  --color-primary-foreground: #fafafa;
+  --color-secondary: #f4f4f5;
+  --color-secondary-foreground: #18181b;
+  --color-muted: #f4f4f5;
+  --color-muted-foreground: #71717a;
+  --color-accent: #f4f4f5;
+  --color-accent-foreground: #18181b;
+  --color-border: #e4e4e7;
+  --color-input: #e4e4e7;
+  --color-ring: #18181b;
+
+  /* Semantic - Muted & Modern */
+  --color-success: #10b981;
+  --color-success-foreground: #ffffff;
+  --color-success-muted: #d1fae5;
+  --color-success-border: #6ee7b7;
+
+  --color-warning: #f59e0b;
+  --color-warning-foreground: #ffffff;
+  --color-warning-muted: #fef3c7;
+  --color-warning-border: #fcd34d;
+
+  --color-info: #6366f1;
+  --color-info-foreground: #ffffff;
+  --color-info-muted: #e0e7ff;
+  --color-info-border: #a5b4fc;
+
+  --color-experiment: #8b5cf6;
+  --color-experiment-foreground: #ffffff;
+  --color-experiment-muted: #ede9fe;
+  --color-experiment-border: #c4b5fd;
+
+  --color-benchmark: #06b6d4;
+  --color-benchmark-foreground: #ffffff;
+  --color-benchmark-muted: #cffafe;
+  --color-benchmark-border: #67e8f9;
+
+  /* Radius - Softer */
+  --radius-lg: 1rem;
+  --radius-md: 0.75rem;
+  --radius-sm: 0.5rem;
+}
+
+.dark {
+  --color-background: #09090b;
+  --color-foreground: #fafafa;
+  --color-card: #18181b;
+  --color-card-foreground: #fafafa;
+  --color-primary: #fafafa;
+  --color-primary-foreground: #18181b;
+  --color-secondary: #27272a;
+  --color-secondary-foreground: #fafafa;
+  --color-muted: #27272a;
+  --color-muted-foreground: #a1a1aa;
+  --color-accent: #27272a;
+  --color-accent-foreground: #fafafa;
+  --color-border: #27272a;
+  --color-input: #27272a;
+  --color-ring: #fafafa;
+
+  /* Semantic - Dark Mode */
+  --color-success: #34d399;
+  --color-success-foreground: #022c22;
+  --color-success-muted: #064e3b;
+  --color-success-border: #059669;
+
+  --color-warning: #fbbf24;
+  --color-warning-foreground: #422006;
+  --color-warning-muted: #78350f;
+  --color-warning-border: #d97706;
+
+  --color-info: #818cf8;
+  --color-info-foreground: #1e1b4b;
+  --color-info-muted: #312e81;
+  --color-info-border: #4f46e5;
+
+  --color-experiment: #a78bfa;
+  --color-experiment-foreground: #2e1065;
+  --color-experiment-muted: #4c1d95;
+  --color-experiment-border: #7c3aed;
+
+  --color-benchmark: #22d3ee;
+  --color-benchmark-foreground: #083344;
+  --color-benchmark-muted: #164e63;
+  --color-benchmark-border: #0891b2;
+}
+
+/* Base Styles */
+* {
+  border-color: var(--color-border);
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth transitions for theme change */
+html {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Custom scrollbar - minimal */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-muted-foreground);
+  border-radius: 3px;
+  opacity: 0.5;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-foreground);
+}
+
+/* Selection */
+::selection {
+  background: var(--color-primary);
+  color: var(--color-primary-foreground);
+}
