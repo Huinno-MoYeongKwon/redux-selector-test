@@ -2,6 +2,7 @@ import type { ButtonHTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 
 type ButtonVariant = 'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'success' | 'warning' | 'experiment' | 'benchmark'
+type ButtonSize = 'sm' | 'default' | 'lg'
 
 const variantStyles: Record<ButtonVariant, string> = {
   default: 'bg-primary text-primary-foreground hover:bg-primary/90',
@@ -15,24 +16,33 @@ const variantStyles: Record<ButtonVariant, string> = {
   benchmark: 'bg-benchmark text-benchmark-foreground hover:bg-benchmark/90',
 }
 
+const sizeStyles: Record<ButtonSize, string> = {
+  sm: 'px-3 py-1.5 text-sm',
+  default: 'px-5 py-2.5 text-base',
+  lg: 'px-6 py-3 text-lg',
+}
+
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant
+  size?: ButtonSize
 }
 
 export function Button({
   className,
   variant = 'default',
+  size = 'default',
   disabled,
   ...props
 }: ButtonProps) {
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-base font-semibold cursor-pointer',
+        'inline-flex items-center justify-center gap-2 rounded-lg font-semibold cursor-pointer',
         'transition-all duration-200',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         'disabled:pointer-events-none disabled:opacity-50',
         'active:scale-[0.98]',
+        sizeStyles[size],
         variantStyles[variant],
         className
       )}

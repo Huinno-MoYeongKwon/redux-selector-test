@@ -6,6 +6,7 @@ import { Badge } from './ui/badge';
 
 export const Case6 = memo(function Case6() {
   const renderCount = useRef(0);
+  // eslint-disable-next-line react-hooks/refs -- 의도적으로 렌더 카운트 추적
   renderCount.current += 1;
 
   const draftProbeLog = useSelector(selectDraftProbeLog);
@@ -22,6 +23,7 @@ export const Case6 = memo(function Case6() {
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-5 mb-6">
+          {/* eslint-disable-next-line react-hooks/refs -- 의도적으로 렌더 카운트 표시 */}
           <Badge variant="experiment" className="text-lg">Render: {renderCount.current}</Badge>
           <Badge variant="default" className="text-lg">
             Last: {draftProbeLog.lastRunAt > 0 ? new Date(draftProbeLog.lastRunAt).toLocaleTimeString() : '-'}

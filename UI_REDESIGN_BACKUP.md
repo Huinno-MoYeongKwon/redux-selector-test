@@ -573,3 +573,176 @@ pnpm dev
 3. Case 1-7 렌더 카운트 정상 동작 확인
 4. Case 6 runDraftProbe 로그 표시 확인
 5. Case 7 벤치마크 실행 및 결과 테이블 표시 확인
+
+---
+
+# 세션 2 - 추가 개선 사항
+
+## 1. Sticky 컨트롤 패널
+
+### 문제
+- 컨트롤 버튼들이 페이지 상단에만 있어서 Case 3 이후 스크롤 시 접근 불편
+
+### 해결
+- 헤더와 컨트롤 영역을 하나의 sticky 그룹으로 통합
+- `sticky top-0 z-50`으로 스크롤해도 항상 상단 고정
+
+### App.tsx 구조 변경
+```tsx
+<div className="sticky top-0 z-50">
+  {/* Header */}
+  <header className="border-b border-border bg-background/95 backdrop-blur-sm">
+    ...
+  </header>
+
+  {/* Controls */}
+  <div className="border-b border-border bg-background/95 backdrop-blur-sm">
+    ...
+  </div>
+</div>
+
+<main>
+  {/* Cases */}
+</main>
+```
+
+---
+
+## 2. Button 컴포넌트 size prop 추가
+
+### src/components/ui/button.tsx
+```typescript
+type ButtonSize = 'sm' | 'default' | 'lg'
+
+const sizeStyles: Record<ButtonSize, string> = {
+  sm: 'px-3 py-1.5 text-sm',
+  default: 'px-5 py-2.5 text-base',
+  lg: 'px-6 py-3 text-lg',
+}
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: ButtonVariant
+  size?: ButtonSize
+}
+
+export function Button({
+  className,
+  variant = 'default',
+  size = 'default',
+  disabled,
+  ...props
+}: ButtonProps) {
+  return (
+    <button
+      className={cn(
+        'inline-flex items-center justify-center gap-2 rounded-lg font-semibold cursor-pointer',
+        'transition-all duration-200',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+        'disabled:pointer-events-none disabled:opacity-50',
+        'active:scale-[0.98]',
+        sizeStyles[size],
+        variantStyles[variant],
+        className
+      )}
+      disabled={disabled}
+      {...props}
+    />
+  )
+}
+```
+
+---
+
+## 3. ESLint 에러 수정
+
+### 에러 목록 (총 21개)
+| 파일 | 규칙 | 설명 |
+|------|------|------|
+| Case1-6.tsx | react-hooks/refs | 렌더링 중 ref 접근/수정 |
+| useTimedSelector.ts | react-hooks/purity | 렌더링 중 performance.now() 호출 |
+| ThemeContext.tsx | react-refresh/only-export-components | 컴포넌트와 훅 함께 export |
+
+### 해결 방법: eslint-disable 주석 추가
+프로젝트 목적상 의도된 동작이므로 해당 라인에 eslint-disable 주석 추가
+
+#### Case1-6.tsx
+```tsx
+// eslint-disable-next-line react-hooks/refs -- 의도적으로 렌더 카운트 추적
+renderCount.current += 1;
+
+// JSX에서도
+{/* eslint-disable-next-line react-hooks/refs -- 의도적으로 렌더 카운트 표시 */}
+<StatItem label="Render" value={renderCount.current} variant="info" />
+```
+
+#### useTimedSelector.ts
+```typescript
+/* eslint-disable react-hooks/purity -- 벤치마크 목적으로 의도적 사용 */
+const start = performance.now();
+selector(state);
+const end = performance.now();
+/* eslint-enable react-hooks/purity */
+```
+
+#### ThemeContext.tsx
+```typescript
+// eslint-disable-next-line react-refresh/only-export-components -- Provider와 hook을 함께 export하는 것이 일반적인 패턴
+export function useTheme() {
+```
+
+---
+
+## 4. 상태 구조 및 버튼 설명 추가
+
+### App.tsx - 컨트롤 영역 하단에 정보 섹션 추가
+```tsx
+{/* Info */}
+<div className="mt-4 pt-4 border-t border-border/50 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-muted-foreground">
+  {/* 상태 구조 */}
+  <div className="space-y-1">
+    <div>
+      <span className="font-semibold text-foreground">items:</span>
+      <code className="ml-1 px-1.5 py-0.5 bg-muted rounded font-mono">
+        {'{ id: number, value: number }[]'}
+      </code>
+    </div>
+    <div>
+      <span className="font-semibold text-foreground">tick:</span>
+      <span className="ml-1">items와 무관한 카운터 (리렌더 테스트용)</span>
+    </div>
+  </div>
+  {/* 버튼 설명 */}
+  <div className="space-y-1">
+    <div><span className="font-semibold text-foreground">bumpTick</span>: tick += 1 (items 불변)</div>
+    <div><span className="font-semibold text-foreground">mutateOneItem</span>: items[0].value += 1</div>
+    <div><span className="font-semibold text-foreground">toggleFilter</span>: 짝수만 필터 on/off</div>
+    <div><span className="font-semibold text-foreground">runDraftProbe</span>: draft에서 selector 캐시 테스트</div>
+  </div>
+</div>
+```
+
+### 표시 내용
+```
+상태 구조:
+  items: { id: number, value: number }[]
+  tick: items와 무관한 카운터 (리렌더 테스트용)
+
+버튼 설명:
+  bumpTick: tick += 1 (items 불변)
+  mutateOneItem: items[0].value += 1
+  toggleFilter: 짝수만 필터 on/off
+  runDraftProbe: draft에서 selector 캐시 테스트
+```
+
+---
+
+## 최종 상태
+
+- ESLint: 0 errors, 0 warnings
+- TypeScript: 통과
+- Build: 성공
+
+```bash
+pnpm build
+# ✓ built in 1.32s
+```

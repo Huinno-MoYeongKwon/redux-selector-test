@@ -9,6 +9,7 @@ export const Case2 = memo(function Case2() {
   const renderCount = useRef(0);
   const prevValueRef = useRef<{ id: number; value: number }[] | null>(null);
 
+  // eslint-disable-next-line react-hooks/refs -- 의도적으로 렌더 카운트 추적
   renderCount.current += 1;
 
   const { value: items, selectorTimeUs } = useTimedSelector(unmemoizedFilteredItems);
@@ -41,6 +42,7 @@ export const Case2 = memo(function Case2() {
       </CardHeader>
       <CardContent>
         <div className="flex gap-10 flex-wrap">
+          {/* eslint-disable-next-line react-hooks/refs -- 의도적으로 렌더 카운트 표시 */}
           <StatItem label="Render" value={renderCount.current} variant="warning" />
           <StatItem label="Time" value={`${selectorTimeUs.toFixed(1)}μs`} variant="warning" />
           <StatItem label="Length" value={items.length} />

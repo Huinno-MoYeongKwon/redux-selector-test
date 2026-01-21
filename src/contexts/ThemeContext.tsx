@@ -61,6 +61,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   )
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- Provider와 hook을 함께 export하는 것이 일반적인 패턴
 export function useTheme() {
   const context = useContext(ThemeContext)
   if (context === undefined) {

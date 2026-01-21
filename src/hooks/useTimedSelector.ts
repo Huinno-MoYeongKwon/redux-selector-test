@@ -23,9 +23,11 @@ export function useTimedSelector<T>(
   // 별도로 시간 측정 (store.getState()로 현재 상태 직접 접근)
   // 이 측정은 렌더링 중에 수행되지만, useSelector와 별개로 측정
   const state = store.getState();
+  /* eslint-disable react-hooks/purity -- 벤치마크 목적으로 의도적 사용 */
   const start = performance.now();
   selector(state); // 순수하게 selector만 실행
   const end = performance.now();
+  /* eslint-enable react-hooks/purity */
   timeRef.current = (end - start) * 1000; // microseconds
 
   return { value, selectorTimeUs: timeRef.current };

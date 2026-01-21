@@ -23,77 +23,107 @@ function App() {
 
   return (
     <div className="min-h-screen">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
-        <div className="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">
-              Redux Selector Test
-            </h1>
-            <p className="text-base text-muted-foreground mt-1">
-              리렌더 / createSelector / createDraftSafeSelector 동작 검증
-            </p>
+      {/* Sticky Header + Controls */}
+      <div className="sticky top-0 z-50">
+        {/* Header */}
+        <header className="border-b border-border bg-background/95 backdrop-blur-sm">
+          <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-bold tracking-tight">
+                Redux Selector Test
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                리렌더 / createSelector / createDraftSafeSelector 동작 검증
+              </p>
+            </div>
+            <ThemeToggle />
           </div>
-          <ThemeToggle />
-        </div>
-      </header>
+        </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-8">
         {/* Controls */}
-        <div className="rounded-xl border border-border bg-card p-6 mb-8">
-          {/* Item Count */}
-          <div className="flex items-center gap-5 pb-5 mb-5 border-b border-border">
-            <span className="text-base font-medium text-muted-foreground">배열 크기</span>
-            <Input
-              type="number"
-              min={1}
-              max={10000}
-              value={inputCount}
-              onChange={(e) => setInputCount(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  dispatch(setItemCount(parseInt(inputCount) || 200));
-                }
-              }}
-              className="w-32 text-base"
-            />
-            <Button
-              variant="outline"
-              onClick={() => dispatch(setItemCount(parseInt(inputCount) || 200))}
-            >
-              적용
-            </Button>
-            <div className="ml-auto">
+        <div className="border-b border-border bg-background/95 backdrop-blur-sm">
+          <div className="max-w-5xl mx-auto px-6 py-4">
+            {/* Item Count */}
+            <div className="flex items-center gap-4 pb-4 mb-4 border-b border-border/50">
+              <span className="text-sm font-medium text-muted-foreground">배열 크기</span>
+              <Input
+                type="number"
+                min={1}
+                max={10000}
+                value={inputCount}
+                onChange={(e) => setInputCount(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    dispatch(setItemCount(parseInt(inputCount) || 200));
+                  }
+                }}
+                className="w-28 text-sm"
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => dispatch(setItemCount(parseInt(inputCount) || 200))}
+              >
+                적용
+              </Button>
               <Badge variant="info">{itemCount.toLocaleString()}개</Badge>
             </div>
-          </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-4 flex-wrap">
-            <Button variant="default" onClick={() => dispatch(bumpTick())}>
-              bumpTick
-            </Button>
-            <Button variant="secondary" onClick={() => dispatch(mutateOneItem())}>
-              mutateOneItem
-            </Button>
-            <Button variant="success" onClick={() => dispatch(toggleFilter())}>
-              toggleFilter
-            </Button>
-            <Button variant="experiment" onClick={() => dispatch(runDraftProbe())}>
-              runDraftProbe
-            </Button>
+            {/* Actions */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-3">
+                <Button variant="default" size="sm" onClick={() => dispatch(bumpTick())}>
+                  bumpTick
+                </Button>
+                <Button variant="secondary" size="sm" onClick={() => dispatch(mutateOneItem())}>
+                  mutateOneItem
+                </Button>
+                <Button variant="success" size="sm" onClick={() => dispatch(toggleFilter())}>
+                  toggleFilter
+                </Button>
+                <Button variant="experiment" size="sm" onClick={() => dispatch(runDraftProbe())}>
+                  runDraftProbe
+                </Button>
+              </div>
 
-            <div className="ml-auto flex items-center gap-4">
-              <span className="text-base text-muted-foreground">
-                tick: <span className="font-mono font-semibold text-foreground">{tick}</span>
-              </span>
-              <span className="text-base text-muted-foreground">
-                filter: <span className="font-mono font-semibold text-foreground">{filterEvenOnly ? 'on' : 'off'}</span>
-              </span>
+              <div className="ml-auto flex items-center gap-4 text-sm">
+                <span className="text-muted-foreground">
+                  tick: <span className="font-mono font-semibold text-foreground">{tick}</span>
+                </span>
+                <span className="text-muted-foreground">
+                  filter: <span className="font-mono font-semibold text-foreground">{filterEvenOnly ? 'on' : 'off'}</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Info */}
+            <div className="mt-4 pt-4 border-t border-border/50 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-muted-foreground">
+              {/* 상태 구조 */}
+              <div className="space-y-1">
+                <div>
+                  <span className="font-semibold text-foreground">items:</span>
+                  <code className="ml-1 px-1.5 py-0.5 bg-muted rounded font-mono">
+                    {'{ id: number, value: number }[]'}
+                  </code>
+                </div>
+                <div>
+                  <span className="font-semibold text-foreground">tick:</span>
+                  <span className="ml-1">items와 무관한 카운터 (리렌더 테스트용)</span>
+                </div>
+              </div>
+              {/* 버튼 설명 */}
+              <div className="space-y-1">
+                <div><span className="font-semibold text-foreground">bumpTick</span>: tick += 1 (items 불변)</div>
+                <div><span className="font-semibold text-foreground">mutateOneItem</span>: items[0].value += 1</div>
+                <div><span className="font-semibold text-foreground">toggleFilter</span>: 짝수만 필터 on/off</div>
+                <div><span className="font-semibold text-foreground">runDraftProbe</span>: draft에서 selector 캐시 테스트</div>
+              </div>
             </div>
           </div>
         </div>
+      </div>
 
+      <main className="max-w-5xl mx-auto px-6 py-6">
         {/* Cases */}
         <div className="space-y-5">
           <Case1 />
