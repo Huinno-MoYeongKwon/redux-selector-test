@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from './app/store';
-import { setItemCount, bumpTick, mutateOneItem, toggleFilter, runDraftProbe } from './features/items/itemsSlice';
+import { setItemCount, setItemMode, bumpTick, mutateOneItem, toggleFilter } from './features/items/itemsSlice';
+import type { ItemMode } from './features/items/itemsSlice';
 import { useState } from 'react';
 import { Case1 } from './components/Case1';
 import { Case2 } from './components/Case2';
@@ -8,17 +9,29 @@ import { Case3 } from './components/Case3';
 import { Case4 } from './components/Case4';
 import { Case5 } from './components/Case5';
 import { Case6 } from './components/Case6';
-import { Case7 } from './components/Case7';
 import { ThemeToggle } from './components/ThemeToggle';
 import { Button } from './components/ui/button';
 import { Input } from './components/ui/input';
 import { Badge } from './components/ui/badge';
+
+const MODE_LABELS: Record<ItemMode, string> = {
+  simple: 'Simple',
+  medium: 'Medium',
+  deep: 'Deep',
+};
+
+const MODE_DESCRIPTIONS: Record<ItemMode, string> = {
+  simple: '2 fields',
+  medium: '~15 fields',
+  deep: '~50+ fields, 6 depth',
+};
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
   const tick = useSelector((state: RootState) => state.items.tick);
   const filterEvenOnly = useSelector((state: RootState) => state.items.filterEvenOnly);
   const itemCount = useSelector((state: RootState) => state.items.items.length);
+  const itemMode = useSelector((state: RootState) => state.items.itemMode);
   const [inputCount, setInputCount] = useState(itemCount.toString());
 
   return (
@@ -30,7 +43,7 @@ function App() {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
               <h1 className="text-base font-bold">Redux Selector Test</h1>
-              <span className="text-xs text-muted-foreground hidden sm:inline">리렌더 / createSelector / createDraftSafeSelector</span>
+              <span className="text-xs text-muted-foreground hidden sm:inline">리렌더 / createSelector / shallowEqual</span>
             </div>
             <ThemeToggle />
           </div>
@@ -63,6 +76,25 @@ function App() {
               <Badge variant="info">{itemCount.toLocaleString()}</Badge>
             </div>
 
+            {/* Mode Control */}
+            <div className="flex items-center gap-2 pr-4 border-r border-border/50">
+              <span className="text-lg text-muted-foreground">Mode</span>
+              <select
+                value={itemMode}
+                onChange={(e) => dispatch(setItemMode(e.target.value as ItemMode))}
+                className="px-3 py-2 text-lg border border-input rounded bg-transparent cursor-pointer"
+              >
+                {(['simple', 'medium', 'deep'] as ItemMode[]).map((mode) => (
+                  <option key={mode} value={mode}>
+                    {MODE_LABELS[mode]}
+                  </option>
+                ))}
+              </select>
+              <Badge variant="default" className="hidden sm:inline-flex">
+                {MODE_DESCRIPTIONS[itemMode]}
+              </Badge>
+            </div>
+
             {/* Action Buttons */}
             <div className="flex items-center gap-2">
               <Button variant="default" size="sm" onClick={() => dispatch(bumpTick())}>
@@ -73,9 +105,6 @@ function App() {
               </Button>
               <Button variant="success" size="sm" onClick={() => dispatch(toggleFilter())}>
                 {filterEvenOnly ? '전체 보기' : '짝수만 보기'}
-              </Button>
-              <Button variant="experiment" size="sm" onClick={() => dispatch(runDraftProbe())}>
-                runDraftProbe
               </Button>
             </div>
 
@@ -113,17 +142,16 @@ function App() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           {/* Left Column - Case 1-5 */}
           <div className="space-y-3">
-            <Case1 />
-            <Case2 />
-            <Case3 />
-            <Case4 />
-            <Case5 />
+            <Case1 key={`case1-${itemMode}`} />
+            <Case2 key={`case2-${itemMode}`} />
+            <Case3 key={`case3-${itemMode}`} />
+            <Case4 key={`case4-${itemMode}`} />
+            <Case5 key={`case5-${itemMode}`} />
           </div>
 
-          {/* Right Column - Case 6, 7 + Summary */}
+          {/* Right Column - Case 6 + Summary */}
           <div className="space-y-3">
-            <Case6 />
-            <Case7 />
+            <Case6 key={`case6-${itemMode}`} />
 
             {/* Summary Table */}
             <div className="rounded-lg border border-border/50 bg-card/80 p-4">
@@ -159,7 +187,7 @@ function App() {
                     </tr>
                     <tr>
                       <td className="py-1.5 px-2 text-left font-medium">필터 토글</td>
-                      <td className="py-1.5 px-2 text-warning">O</td>
+                      <td className="py-1.5 px-2 text-success">-</td>
                       <td className="py-1.5 px-2 text-warning">O</td>
                       <td className="py-1.5 px-2 text-warning">O</td>
                       <td className="py-1.5 px-2 text-warning">O</td>
@@ -168,9 +196,14 @@ function App() {
                   </tbody>
                 </table>
               </div>
-              <p className="mt-3 text-lg text-muted-foreground">
-                <span className="text-warning">O</span> = 리렌더 / <span className="text-success">-</span> = 스킵
-              </p>
+              <div className="mt-3 text-lg text-muted-foreground space-y-1">
+                <p>
+                  <span className="text-warning">O</span> = 리렌더 / <span className="text-success">-</span> = 스킵
+                </p>
+                <p>
+                  <span className="font-semibold text-foreground">실행시간</span> = useSelector 내부 함수 실행 시간 (μs, 1ms = 1,000μs)
+                </p>
+              </div>
             </div>
           </div>
         </div>

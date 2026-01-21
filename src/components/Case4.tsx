@@ -4,6 +4,7 @@ import { useTimedSelector } from '../hooks/useTimedSelector';
 import { memoizedFilteredItems } from '../features/items/selectors';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from './ui/card';
 import { StatItem } from './ui/stat-item';
+import { RenderReasonBadge } from './RenderReasonBadge';
 
 export const Case4 = memo(function Case4() {
   const renderCount = useRef(0);
@@ -46,13 +47,14 @@ export const Case4 = memo(function Case4() {
 );
 useSelector(selector);`}
         </pre>
-        <div className="flex gap-4 flex-wrap">
+        <div className="flex gap-4 flex-wrap mb-2">
           {/* eslint-disable-next-line react-hooks/refs -- 의도적으로 렌더 카운트 표시 */}
           <StatItem label="Render" value={renderCount.current} variant="success" />
-          <StatItem label="Time" value={`${selectorTimeUs.toFixed(1)}μs`} variant="success" />
+          <StatItem label="실행시간" value={`${selectorTimeUs.toFixed(1)}μs`} variant="success" />
           <StatItem label="Len" value={items.length} />
           <StatItem label="[0].val" value={items[0]?.value} />
         </div>
+        <RenderReasonBadge caseType={4} />
       </CardContent>
     </Card>
   );

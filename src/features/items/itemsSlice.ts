@@ -1,38 +1,271 @@
-import { createSlice, current } from '@reduxjs/toolkit';
-import type { RootState } from '../../app/store';
-import { memoizedViaCreateSelector, memoizedViaDraftSafeSelector } from './selectors';
+import { createSlice } from '@reduxjs/toolkit';
+
+// 객체 복잡도 모드
+export type ItemMode = 'simple' | 'medium' | 'deep';
 
 export interface Item {
+  // 기본 필드 (Simple)
   id: number;
   value: number;
+
+  // Medium 필드
+  name?: string;
+  description?: string;
+  status?: 'active' | 'inactive' | 'pending';
+  priority?: number;
+  metadata?: {
+    created: number;
+    updated: number;
+    version: number;
+    author: string;
+    tags: string[];
+    categories: string[];
+    permissions: {
+      read: boolean;
+      write: boolean;
+      delete: boolean;
+      admin: boolean;
+    };
+  };
+
+  // Deep 필드
+  analytics?: {
+    views: number;
+    clicks: number;
+    shares: number;
+    rating: number;
+    engagement: {
+      likes: number;
+      comments: number;
+      bookmarks: number;
+    };
+    history: Array<{ date: number; action: string; userId: number }>;
+  };
+  config?: {
+    settings: {
+      theme: string;
+      language: string;
+      timezone: string;
+      notifications: {
+        email: boolean;
+        push: boolean;
+        sms: boolean;
+        frequency: 'realtime' | 'daily' | 'weekly';
+      };
+      privacy: {
+        public: boolean;
+        searchable: boolean;
+        showActivity: boolean;
+      };
+    };
+    features: string[];
+    limits: {
+      maxStorage: number;
+      maxRequests: number;
+      rateLimit: number;
+    };
+  };
+  nested?: {
+    level1: {
+      data1: string;
+      count1: number;
+      level2: {
+        data2: string;
+        count2: number;
+        items2: string[];
+        level3: {
+          data3: string;
+          count3: number;
+          level4: {
+            data4: string;
+            count4: number;
+            level5: {
+              data5: string;
+              count5: number;
+              level6: {
+                data6: string;
+                deepestValue: number;
+                finalPayload: {
+                  secret: string;
+                  timestamp: number;
+                  checksum: string;
+                };
+              };
+            };
+          };
+        };
+      };
+    };
+  };
+  relationships?: {
+    parent: { id: number; type: string } | null;
+    children: Array<{ id: number; type: string; order: number }>;
+    siblings: Array<{ id: number; type: string }>;
+    references: Array<{
+      targetId: number;
+      targetType: string;
+      relation: string;
+      metadata: { createdAt: number; strength: number };
+    }>;
+  };
 }
 
-export interface DraftProbeLog {
-  lastRunAt: number;
-  notes: string[];
-}
+export type ActionType = 'none' | 'setItemCount' | 'setItemMode' | 'bumpTick' | 'mutateOneItem' | 'toggleFilter';
 
 export interface ItemsState {
   items: Item[];
+  itemMode: ItemMode;
   tick: number;
   filterEvenOnly: boolean;
-  draftProbeLog: DraftProbeLog;
+  lastAction: ActionType;
 }
 
-// 초기 200개 아이템 생성
-const initialItems: Item[] = Array.from({ length: 200 }, (_, i) => ({
-  id: i,
-  value: i,
-}));
+// 모드별 아이템 생성 함수
+function createItems(count: number, mode: ItemMode): Item[] {
+  const statuses: Array<'active' | 'inactive' | 'pending'> = ['active', 'inactive', 'pending'];
+  const themes = ['light', 'dark', 'system', 'auto'];
+  const languages = ['ko', 'en', 'ja', 'zh'];
+  const timezones = ['Asia/Seoul', 'America/New_York', 'Europe/London', 'Asia/Tokyo'];
+  const frequencies: Array<'realtime' | 'daily' | 'weekly'> = ['realtime', 'daily', 'weekly'];
+  const actions = ['view', 'click', 'share', 'bookmark', 'comment', 'like'];
+  const relations = ['related', 'similar', 'parent', 'child', 'reference'];
+
+  return Array.from({ length: count }, (_, i) => {
+    // Simple: 기본 필드만
+    const base: Item = { id: i, value: i };
+
+    // Medium: 기본 + 메타데이터 + 몇 가지 필드
+    if (mode === 'medium' || mode === 'deep') {
+      base.name = `Item-${i}-${Math.random().toString(36).substring(7)}`;
+      base.description = `This is a detailed description for item ${i}. It contains various information about the item's purpose, origin, and characteristics.`;
+      base.status = statuses[i % 3];
+      base.priority = (i % 10) + 1;
+      base.metadata = {
+        created: Date.now() - i * 86400000, // i일 전
+        updated: Date.now() - i * 3600000,  // i시간 전
+        version: Math.floor(i / 10) + 1,
+        author: `user-${i % 100}`,
+        tags: [`tag-${i % 5}`, `category-${i % 3}`, `type-${i % 2}`, `group-${i % 7}`],
+        categories: [`cat-${i % 4}`, `subcat-${i % 6}`, `region-${i % 3}`],
+        permissions: {
+          read: true,
+          write: i % 2 === 0,
+          delete: i % 3 === 0,
+          admin: i % 10 === 0,
+        },
+      };
+    }
+
+    // Deep: 모든 필드 + 깊은 중첩 + 배열들
+    if (mode === 'deep') {
+      base.analytics = {
+        views: i * 100 + Math.floor(Math.random() * 1000),
+        clicks: i * 10 + Math.floor(Math.random() * 100),
+        shares: i + Math.floor(Math.random() * 50),
+        rating: 3 + (Math.random() * 2),
+        engagement: {
+          likes: i * 5 + Math.floor(Math.random() * 200),
+          comments: Math.floor(Math.random() * 50),
+          bookmarks: Math.floor(Math.random() * 30),
+        },
+        history: Array.from({ length: 5 }, (_, j) => ({
+          date: Date.now() - j * 86400000,
+          action: actions[j % actions.length],
+          userId: (i * 10 + j) % 1000,
+        })),
+      };
+
+      base.config = {
+        settings: {
+          theme: themes[i % themes.length],
+          language: languages[i % languages.length],
+          timezone: timezones[i % timezones.length],
+          notifications: {
+            email: i % 2 === 0,
+            push: i % 3 === 0,
+            sms: i % 5 === 0,
+            frequency: frequencies[i % frequencies.length],
+          },
+          privacy: {
+            public: i % 2 === 0,
+            searchable: i % 3 !== 0,
+            showActivity: i % 4 === 0,
+          },
+        },
+        features: [`feature-${i % 3}`, `addon-${i % 5}`, `plugin-${i % 7}`, `module-${i % 4}`],
+        limits: {
+          maxStorage: 1024 * (i + 1),
+          maxRequests: 1000 * (i + 1),
+          rateLimit: 100 + i,
+        },
+      };
+
+      base.nested = {
+        level1: {
+          data1: `L1-data-${i}-${'a'.repeat(20)}`,
+          count1: i * 1,
+          level2: {
+            data2: `L2-data-${i}-${'b'.repeat(20)}`,
+            count2: i * 2,
+            items2: [`item2-${i}-a`, `item2-${i}-b`, `item2-${i}-c`],
+            level3: {
+              data3: `L3-data-${i}-${'c'.repeat(20)}`,
+              count3: i * 3,
+              level4: {
+                data4: `L4-data-${i}-${'d'.repeat(20)}`,
+                count4: i * 4,
+                level5: {
+                  data5: `L5-data-${i}-${'e'.repeat(20)}`,
+                  count5: i * 5,
+                  level6: {
+                    data6: `L6-data-${i}-${'f'.repeat(20)}`,
+                    deepestValue: i * 1000 + Math.random() * 1000,
+                    finalPayload: {
+                      secret: `secret-${i}-${Math.random().toString(36).substring(2, 15)}`,
+                      timestamp: Date.now() + i,
+                      checksum: `checksum-${i}-${Math.random().toString(16).substring(2, 10)}`,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      };
+
+      base.relationships = {
+        parent: i > 0 ? { id: Math.floor(i / 2), type: 'parent' } : null,
+        children: Array.from({ length: Math.min(3, i % 5) }, (_, j) => ({
+          id: i * 10 + j,
+          type: 'child',
+          order: j,
+        })),
+        siblings: Array.from({ length: 2 }, (_, j) => ({
+          id: i + j + 1,
+          type: 'sibling',
+        })),
+        references: Array.from({ length: Math.min(4, i % 6) }, (_, j) => ({
+          targetId: (i + j * 7) % count,
+          targetType: ['document', 'image', 'video', 'link'][j % 4],
+          relation: relations[j % relations.length],
+          metadata: {
+            createdAt: Date.now() - j * 3600000,
+            strength: 0.5 + Math.random() * 0.5,
+          },
+        })),
+      };
+    }
+
+    return base;
+  });
+}
 
 const initialState: ItemsState = {
-  items: initialItems,
+  items: createItems(200, 'simple'),
+  itemMode: 'simple',
   tick: 0,
   filterEvenOnly: false,
-  draftProbeLog: {
-    lastRunAt: 0,
-    notes: [],
-  },
+  lastAction: 'none',
 };
 
 const itemsSlice = createSlice({
@@ -41,130 +274,46 @@ const itemsSlice = createSlice({
   reducers: {
     // 배열 크기 변경
     setItemCount: (state, action: { payload: number }) => {
-      const count = Math.max(1, Math.min(10000, action.payload)); // 1 ~ 10000 제한
-      state.items = Array.from({ length: count }, (_, i) => ({
-        id: i,
-        value: i,
-      }));
-      console.log(`[setItemCount] items.length: ${state.items.length}`);
+      const count = Math.max(1, Math.min(10000, action.payload));
+      state.items = createItems(count, state.itemMode);
+      state.lastAction = 'setItemCount';
+      console.log(`[setItemCount] items.length: ${state.items.length}, mode: ${state.itemMode}`);
+    },
+
+    // 객체 모드 변경 (모든 상태 리셋)
+    setItemMode: (state, action: { payload: ItemMode }) => {
+      const newMode = action.payload;
+      const count = state.items.length;
+      state.itemMode = newMode;
+      state.items = createItems(count, newMode);
+      state.tick = 0;
+      state.filterEvenOnly = false;
+      state.lastAction = 'setItemMode';
+      console.log(`[setItemMode] mode: ${newMode}, items recreated with ${count} items`);
     },
 
     // tick += 1 (items는 변경하지 않음)
     bumpTick: (state) => {
       state.tick += 1;
+      state.lastAction = 'bumpTick';
       console.log(`[bumpTick] tick: ${state.tick}`);
     },
 
     // items[0].value += 1 (immer로 일부만 변경)
     mutateOneItem: (state) => {
       state.items[0].value += 1;
+      state.lastAction = 'mutateOneItem';
       console.log(`[mutateOneItem] items[0].value: ${state.items[0].value}`);
     },
 
     // filterEvenOnly 토글
     toggleFilter: (state) => {
       state.filterEvenOnly = !state.filterEvenOnly;
+      state.lastAction = 'toggleFilter';
       console.log(`[toggleFilter] filterEvenOnly: ${state.filterEvenOnly}`);
-    },
-
-    // reducer 내부에서 selector를 "draft 상태를 대상으로" 호출해보고 결과를 기록
-    runDraftProbe: (state) => {
-      const notes: string[] = [];
-      const now = Date.now();
-
-      console.log('\n========== [runDraftProbe] 시작 ==========');
-      console.log('Draft(Proxy) vs Plain Object에서 selector 캐시 동작 비교');
-
-      // 테스트 1: 동일한 fakeRootState 객체로 반복 호출
-      // (이 경우 둘 다 캐시 히트 가능)
-      notes.push(`[${new Date(now).toLocaleTimeString()}] Draft Probe 실행`);
-      notes.push('');
-      notes.push('=== 테스트 1: 동일한 wrapper 객체로 반복 호출 ===');
-
-      const fakeRootState1 = { items: state } as unknown as RootState;
-
-      const out1a = memoizedViaCreateSelector(fakeRootState1);
-      const out1b = memoizedViaCreateSelector(fakeRootState1);
-      const out2a = memoizedViaDraftSafeSelector(fakeRootState1);
-      const out2b = memoizedViaDraftSafeSelector(fakeRootState1);
-
-      notes.push(`createSelector: 캐시 재사용 = ${out1a === out1b ? 'YES' : 'NO'}`);
-      notes.push(`draftSafeSelector: 캐시 재사용 = ${out2a === out2b ? 'YES' : 'NO'}`);
-
-      console.log('테스트 1 - 동일 wrapper:');
-      console.log(`  createSelector 캐시: ${out1a === out1b}`);
-      console.log(`  draftSafeSelector 캐시: ${out2a === out2b}`);
-
-      // 테스트 2: 매번 새로운 wrapper 객체 생성
-      // createSelector는 입력 참조가 달라지므로 캐시 미스 발생 가능
-      notes.push('');
-      notes.push('=== 테스트 2: 매번 새 wrapper 객체 생성 ===');
-
-      const out3a = memoizedViaCreateSelector({ items: state } as unknown as RootState);
-      const out3b = memoizedViaCreateSelector({ items: state } as unknown as RootState);
-      const out4a = memoizedViaDraftSafeSelector({ items: state } as unknown as RootState);
-      const out4b = memoizedViaDraftSafeSelector({ items: state } as unknown as RootState);
-
-      notes.push(`createSelector: 캐시 재사용 = ${out3a === out3b ? 'YES' : 'NO'}`);
-      notes.push(`draftSafeSelector: 캐시 재사용 = ${out4a === out4b ? 'YES' : 'NO'}`);
-
-      console.log('테스트 2 - 새 wrapper:');
-      console.log(`  createSelector 캐시: ${out3a === out3b}`);
-      console.log(`  draftSafeSelector 캐시: ${out4a === out4b}`);
-
-      // 테스트 3: current()로 draft를 plain object로 변환 후 비교
-      notes.push('');
-      notes.push('=== 테스트 3: current()로 plain object 변환 ===');
-
-      const plainState = current(state);
-      const fakeRootStatePlain = { items: plainState } as unknown as RootState;
-
-      const out5a = memoizedViaCreateSelector(fakeRootStatePlain);
-      const out5b = memoizedViaCreateSelector(fakeRootStatePlain);
-
-      notes.push(`current() 사용 시 createSelector 캐시: ${out5a === out5b ? 'YES' : 'NO'}`);
-      notes.push(`(draft를 plain으로 변환하면 일반적인 캐시 동작)`);
-
-      console.log('테스트 3 - current() 사용:');
-      console.log(`  createSelector 캐시: ${out5a === out5b}`);
-
-      // 테스트 4: draft.items 참조 비교
-      notes.push('');
-      notes.push('=== 테스트 4: 참조 동일성 확인 ===');
-
-      const itemsRef1 = state.items;
-      const itemsRef2 = state.items;
-      void plainState.items; // Used in comparison below
-
-      notes.push(`draft.items === draft.items: ${itemsRef1 === itemsRef2 ? 'YES' : 'NO'}`);
-      notes.push(`current(draft).items === current(draft).items: ${plainState.items === current(state).items ? 'YES' : 'NO'}`);
-
-      console.log('테스트 4 - 참조 비교:');
-      console.log(`  draft.items === draft.items: ${itemsRef1 === itemsRef2}`);
-      console.log(`  current(draft).items 매번 호출: ${plainState.items === current(state).items}`);
-
-      // 결론
-      notes.push('');
-      notes.push('=== 결론 ===');
-      if (out3a !== out3b && out4a === out4b) {
-        notes.push('createDraftSafeSelector는 draft에서 캐시 유지');
-        notes.push('createSelector는 새 wrapper마다 캐시 미스');
-      } else if (out3a === out3b && out4a === out4b) {
-        notes.push('둘 다 캐시 유지됨');
-        notes.push('(selector 입력이 동일 참조로 평가됨)');
-      } else {
-        notes.push('예상과 다른 결과 - 콘솔 로그 확인 필요');
-      }
-
-      console.log('\n========== [runDraftProbe] 종료 ==========\n');
-
-      state.draftProbeLog = {
-        lastRunAt: now,
-        notes,
-      };
     },
   },
 });
 
-export const { setItemCount, bumpTick, mutateOneItem, toggleFilter, runDraftProbe } = itemsSlice.actions;
+export const { setItemCount, setItemMode, bumpTick, mutateOneItem, toggleFilter } = itemsSlice.actions;
 export default itemsSlice.reducer;
