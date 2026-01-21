@@ -162,18 +162,18 @@ export const Case7 = memo(function Case7() {
         <CardTitle>Case 7: 벤치마크</CardTitle>
         <CardDescription>
           각 방식의 실행 시간 비교
-          <span className="mx-3 text-border">|</span>
-          <span className="text-benchmark font-semibold">Run Benchmark 버튼으로 측정</span>
+          <span className="mx-2 text-border/50">|</span>
+          <span className="text-benchmark">Run Benchmark로 측정</span>
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center gap-5 mb-6">
-          <label className="flex items-center gap-3 text-base">
-            <span className="text-muted-foreground font-medium">반복</span>
+        <div className="flex items-center gap-3 mb-3">
+          <label className="flex items-center gap-2 text-lg">
+            <span className="text-muted-foreground">반복</span>
             <select
               value={iterations}
               onChange={(e) => setIterations(Number(e.target.value))}
-              className="px-4 py-2 text-base border border-input rounded-lg bg-transparent cursor-pointer"
+              className="px-3 py-2 text-lg border border-input rounded bg-transparent cursor-pointer"
             >
               <option value={100}>100</option>
               <option value={1000}>1,000</option>
@@ -181,20 +181,20 @@ export const Case7 = memo(function Case7() {
               <option value={10000}>10,000</option>
             </select>
           </label>
-          <Button onClick={runBenchmark} disabled={isRunning} variant="benchmark">
+          <Button onClick={runBenchmark} disabled={isRunning} variant="benchmark" size="sm">
             {isRunning ? 'Running...' : 'Run Benchmark'}
           </Button>
         </div>
 
         {results.length > 0 && (
-          <div className="rounded-lg border border-border overflow-hidden">
-            <table className="w-full text-base">
+          <div className="rounded border border-border/50 overflow-hidden">
+            <table className="w-full text-lg">
               <thead>
-                <tr className="bg-muted/50">
-                  <th className="py-3 px-5 text-left font-semibold text-muted-foreground">방식</th>
-                  <th className="py-3 px-5 text-left font-semibold text-muted-foreground">설명</th>
-                  <th className="py-3 px-5 text-right font-semibold text-muted-foreground">평균 (μs)</th>
-                  <th className="py-3 px-5 text-right font-semibold text-muted-foreground">배수</th>
+                <tr className="bg-muted/30">
+                  <th className="py-1.5 px-2 text-left font-medium text-muted-foreground">방식</th>
+                  <th className="py-1.5 px-2 text-left font-medium text-muted-foreground">설명</th>
+                  <th className="py-1.5 px-2 text-right font-medium text-muted-foreground">μs</th>
+                  <th className="py-1.5 px-2 text-right font-medium text-muted-foreground">배수</th>
                 </tr>
               </thead>
               <tbody>
@@ -202,11 +202,11 @@ export const Case7 = memo(function Case7() {
                   const baseline = results[0].avgTimeUs || 1;
                   const relative = result.avgTimeUs / baseline;
                   return (
-                    <tr key={i} className="border-t border-border/50">
-                      <td className="py-3 px-5 font-semibold">{result.name}</td>
-                      <td className="py-3 px-5 text-muted-foreground">{result.description}</td>
-                      <td className="py-3 px-5 text-right font-mono font-semibold">{result.avgTimeUs.toFixed(3)}</td>
-                      <td className={`py-3 px-5 text-right font-mono font-bold ${relative > 10 ? 'text-warning' : relative < 2 ? 'text-success' : ''}`}>
+                    <tr key={i} className="border-t border-border/30">
+                      <td className="py-1.5 px-2 font-medium">{result.name}</td>
+                      <td className="py-1.5 px-2 text-muted-foreground">{result.description}</td>
+                      <td className="py-1.5 px-2 text-right font-mono">{result.avgTimeUs.toFixed(3)}</td>
+                      <td className={`py-1.5 px-2 text-right font-mono font-semibold ${relative > 10 ? 'text-warning' : relative < 2 ? 'text-success' : ''}`}>
                         {relative.toFixed(1)}x
                       </td>
                     </tr>
@@ -218,7 +218,7 @@ export const Case7 = memo(function Case7() {
         )}
 
         {results.length === 0 && (
-          <div className="text-base text-muted-foreground">
+          <div className="text-lg text-muted-foreground">
             Run Benchmark를 클릭하면 결과가 여기에 표시됩니다.
           </div>
         )}

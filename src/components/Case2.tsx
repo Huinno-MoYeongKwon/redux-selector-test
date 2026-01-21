@@ -33,20 +33,24 @@ export const Case2 = memo(function Case2() {
       <CardHeader>
         <CardTitle>Case 2: 가공 배열 (메모이즈 X)</CardTitle>
         <CardDescription>
-          <code className="text-sm font-semibold bg-muted px-2 py-1 rounded">items.filter(...)</code>
-          <span className="mx-3 text-border">|</span>
-          <span>equalityFn: <strong>없음</strong></span>
-          <span className="mx-3 text-border">|</span>
-          <span className="text-warning font-semibold">매번 새 배열 생성</span>
+          <code className="font-mono bg-muted/50 px-1 rounded">filter(...)</code>
+          <span className="mx-2 text-border/50">|</span>
+          <span className="text-warning">매번 새 배열</span>
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex gap-10 flex-wrap">
+        <pre className="text-sm font-mono bg-zinc-900 text-zinc-100 rounded p-3 mb-3 overflow-x-auto">
+{`const selector = (state) => {
+  return state.items.items.filter(() => true); // 매번 새 배열
+};
+useSelector(selector);`}
+        </pre>
+        <div className="flex gap-4 flex-wrap">
           {/* eslint-disable-next-line react-hooks/refs -- 의도적으로 렌더 카운트 표시 */}
           <StatItem label="Render" value={renderCount.current} variant="warning" />
           <StatItem label="Time" value={`${selectorTimeUs.toFixed(1)}μs`} variant="warning" />
-          <StatItem label="Length" value={items.length} />
-          <StatItem label="[0].value" value={items[0]?.value} />
+          <StatItem label="Len" value={items.length} />
+          <StatItem label="[0].val" value={items[0]?.value} />
         </div>
       </CardContent>
     </Card>

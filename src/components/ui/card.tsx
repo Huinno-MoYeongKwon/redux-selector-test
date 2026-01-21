@@ -4,11 +4,11 @@ import { cn } from '@/lib/utils'
 type CardVariant = 'default' | 'warning' | 'success' | 'experiment' | 'benchmark'
 
 const variantStyles: Record<CardVariant, string> = {
-  default: 'border-border bg-card',
-  warning: 'border-l-4 border-l-warning border-y-border border-r-border bg-card',
-  success: 'border-l-4 border-l-success border-y-border border-r-border bg-card',
-  experiment: 'border-l-4 border-l-experiment border-y-border border-r-border bg-card',
-  benchmark: 'border-l-4 border-l-benchmark border-y-border border-r-border bg-card',
+  default: 'border-border/50 bg-card/80',
+  warning: 'border-l-2 border-l-warning border-t-border/50 border-r-border/50 border-b-border/50 bg-warning-muted/20',
+  success: 'border-l-2 border-l-success border-t-border/50 border-r-border/50 border-b-border/50 bg-success-muted/20',
+  experiment: 'border-l-2 border-l-experiment border-t-border/50 border-r-border/50 border-b-border/50 bg-experiment-muted/20',
+  benchmark: 'border-l-2 border-l-benchmark border-t-border/50 border-r-border/50 border-b-border/50 bg-benchmark-muted/20',
 }
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
@@ -19,9 +19,8 @@ export function Card({ className, variant = 'default', ...props }: CardProps) {
   return (
     <div
       className={cn(
-        'rounded-xl border bg-card p-6',
-        'shadow-sm transition-shadow duration-200',
-        'hover:shadow-md',
+        'rounded-lg border p-4',
+        'backdrop-blur-sm',
         variantStyles[variant],
         className
       )}
@@ -33,7 +32,7 @@ export function Card({ className, variant = 'default', ...props }: CardProps) {
 export function CardHeader({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn('flex flex-col space-y-2', className)}
+      className={cn('flex flex-col gap-1', className)}
       {...props}
     />
   )
@@ -46,7 +45,7 @@ interface CardTitleProps extends HTMLAttributes<HTMLHeadingElement> {
 export function CardTitle({ className, children, ...props }: CardTitleProps) {
   return (
     <h3
-      className={cn('text-xl font-bold tracking-tight text-card-foreground', className)}
+      className={cn('text-xl font-semibold tracking-tight text-card-foreground', className)}
       {...props}
     >
       {children}
@@ -57,7 +56,7 @@ export function CardTitle({ className, children, ...props }: CardTitleProps) {
 export function CardDescription({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn('text-base text-muted-foreground leading-relaxed', className)}
+      className={cn('text-lg text-muted-foreground', className)}
       {...props}
     />
   )
@@ -66,7 +65,7 @@ export function CardDescription({ className, ...props }: HTMLAttributes<HTMLDivE
 export function CardContent({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn('pt-6', className)}
+      className={cn('pt-3', className)}
       {...props}
     />
   )

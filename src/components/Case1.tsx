@@ -34,18 +34,22 @@ export const Case1 = memo(function Case1() {
       <CardHeader>
         <CardTitle>Case 1: 기본 배열 반환</CardTitle>
         <CardDescription>
-          <code className="text-sm font-semibold bg-muted px-2 py-1 rounded">(s) =&gt; s.items.items</code>
-          <span className="mx-3 text-border">|</span>
-          <span>equalityFn: <strong>없음 (===)</strong></span>
+          <code className="font-mono bg-muted/50 px-1 rounded">(s) =&gt; s.items.items</code>
+          <span className="mx-2 text-border/50">|</span>
+          equalityFn: <strong>없음</strong>
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex gap-10 flex-wrap">
+        <pre className="text-sm font-mono bg-zinc-900 text-zinc-100 rounded p-3 mb-3 overflow-x-auto">
+{`const selector = (state) => state.items.items;
+useSelector(selector);`}
+        </pre>
+        <div className="flex gap-4 flex-wrap">
           {/* eslint-disable-next-line react-hooks/refs -- 의도적으로 렌더 카운트 표시 */}
           <StatItem label="Render" value={renderCount.current} variant="info" />
           <StatItem label="Time" value={`${selectorTimeUs.toFixed(1)}μs`} />
-          <StatItem label="Length" value={items.length} />
-          <StatItem label="[0].value" value={items[0]?.value} />
+          <StatItem label="Len" value={items.length} />
+          <StatItem label="[0].val" value={items[0]?.value} />
         </div>
       </CardContent>
     </Card>

@@ -6,11 +6,10 @@ export function Input({ className, type = 'text', ...props }: InputHTMLAttribute
     <input
       type={type}
       className={cn(
-        'flex h-10 w-full rounded-lg border border-input bg-transparent px-3 py-2',
-        'text-sm font-mono',
-        'transition-colors duration-200',
+        'flex h-10 w-full rounded border border-input bg-transparent px-3 py-2',
+        'text-lg font-mono',
         'placeholder:text-muted-foreground',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+        'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
         'disabled:cursor-not-allowed disabled:opacity-50',
         className
       )}

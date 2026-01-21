@@ -19,12 +19,12 @@ function getSystemTheme(): 'light' | 'dark' {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === 'undefined') return 'light'
+    if (typeof window === 'undefined') return 'dark'
     const stored = localStorage.getItem(STORAGE_KEY)
     if (stored === 'light' || stored === 'dark' || stored === 'system') {
       return stored
     }
-    return 'light'
+    return 'dark'
   })
 
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>(() => {

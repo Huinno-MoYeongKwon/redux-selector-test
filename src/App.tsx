@@ -22,30 +22,24 @@ function App() {
   const [inputCount, setInputCount] = useState(itemCount.toString());
 
   return (
-    <div className="min-h-screen">
-      {/* Sticky Header + Controls */}
-      <div className="sticky top-0 z-50">
-        {/* Header */}
-        <header className="border-b border-border bg-background/95 backdrop-blur-sm">
-          <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-bold tracking-tight">
-                Redux Selector Test
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                리렌더 / createSelector / createDraftSafeSelector 동작 검증
-              </p>
+    <div className="min-h-screen bg-background">
+      {/* Compact Sticky Header */}
+      <div className="sticky top-0 z-50 border-b border-border/50 bg-background/95 backdrop-blur-sm">
+        <div className="max-w-6xl mx-auto px-4 py-3">
+          {/* Top Row: Title + Theme Toggle */}
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-3">
+              <h1 className="text-base font-bold">Redux Selector Test</h1>
+              <span className="text-xs text-muted-foreground hidden sm:inline">리렌더 / createSelector / createDraftSafeSelector</span>
             </div>
             <ThemeToggle />
           </div>
-        </header>
 
-        {/* Controls */}
-        <div className="border-b border-border bg-background/95 backdrop-blur-sm">
-          <div className="max-w-5xl mx-auto px-6 py-4">
-            {/* Item Count */}
-            <div className="flex items-center gap-4 pb-4 mb-4 border-b border-border/50">
-              <span className="text-sm font-medium text-muted-foreground">배열 크기</span>
+          {/* Control Row */}
+          <div className="flex items-center gap-3 flex-wrap">
+            {/* Size Control */}
+            <div className="flex items-center gap-2 pr-4 border-r border-border/50">
+              <span className="text-lg text-muted-foreground">Size</span>
               <Input
                 type="number"
                 min={1}
@@ -57,132 +51,128 @@ function App() {
                     dispatch(setItemCount(parseInt(inputCount) || 200));
                   }
                 }}
-                className="w-28 text-sm"
+                className="w-24"
               />
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => dispatch(setItemCount(parseInt(inputCount) || 200))}
               >
-                적용
+                Set
               </Button>
-              <Badge variant="info">{itemCount.toLocaleString()}개</Badge>
+              <Badge variant="info">{itemCount.toLocaleString()}</Badge>
             </div>
 
-            {/* Actions */}
-            <div className="flex items-center gap-3 flex-wrap">
-              <div className="flex items-center gap-3">
-                <Button variant="default" size="sm" onClick={() => dispatch(bumpTick())}>
-                  bumpTick
-                </Button>
-                <Button variant="secondary" size="sm" onClick={() => dispatch(mutateOneItem())}>
-                  mutateOneItem
-                </Button>
-                <Button variant="success" size="sm" onClick={() => dispatch(toggleFilter())}>
-                  toggleFilter
-                </Button>
-                <Button variant="experiment" size="sm" onClick={() => dispatch(runDraftProbe())}>
-                  runDraftProbe
-                </Button>
-              </div>
-
-              <div className="ml-auto flex items-center gap-4 text-sm">
-                <span className="text-muted-foreground">
-                  tick: <span className="font-mono font-semibold text-foreground">{tick}</span>
-                </span>
-                <span className="text-muted-foreground">
-                  filter: <span className="font-mono font-semibold text-foreground">{filterEvenOnly ? 'on' : 'off'}</span>
-                </span>
-              </div>
+            {/* Action Buttons */}
+            <div className="flex items-center gap-2">
+              <Button variant="default" size="sm" onClick={() => dispatch(bumpTick())}>
+                bumpTick
+              </Button>
+              <Button variant="secondary" size="sm" onClick={() => dispatch(mutateOneItem())}>
+                mutateOneItem
+              </Button>
+              <Button variant="success" size="sm" onClick={() => dispatch(toggleFilter())}>
+                {filterEvenOnly ? '전체 보기' : '짝수만 보기'}
+              </Button>
+              <Button variant="experiment" size="sm" onClick={() => dispatch(runDraftProbe())}>
+                runDraftProbe
+              </Button>
             </div>
 
-            {/* Info */}
-            <div className="mt-4 pt-4 border-t border-border/50 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-muted-foreground">
-              {/* 상태 구조 */}
-              <div className="space-y-1">
-                <div>
-                  <span className="font-semibold text-foreground">items:</span>
-                  <code className="ml-1 px-1.5 py-0.5 bg-muted rounded font-mono">
-                    {'{ id: number, value: number }[]'}
-                  </code>
-                </div>
-                <div>
-                  <span className="font-semibold text-foreground">tick:</span>
-                  <span className="ml-1">items와 무관한 카운터 (리렌더 테스트용)</span>
-                </div>
-              </div>
-              {/* 버튼 설명 */}
-              <div className="space-y-1">
-                <div><span className="font-semibold text-foreground">bumpTick</span>: tick += 1 (items 불변)</div>
-                <div><span className="font-semibold text-foreground">mutateOneItem</span>: items[0].value += 1</div>
-                <div><span className="font-semibold text-foreground">toggleFilter</span>: 짝수만 필터 on/off</div>
-                <div><span className="font-semibold text-foreground">runDraftProbe</span>: draft에서 selector 캐시 테스트</div>
-              </div>
+            {/* Status */}
+            <div className="flex items-center gap-4 ml-auto text-lg">
+              <span className="text-muted-foreground">
+                tick: <span className="font-mono font-semibold text-foreground">{tick}</span>
+              </span>
+              <span className="text-muted-foreground">
+                보기: <span className="font-mono font-semibold text-foreground">{filterEvenOnly ? '짝수만' : '전체'}</span>
+              </span>
             </div>
           </div>
+
+          {/* Info Row - Collapsible on mobile */}
+          <details className="mt-3 text-lg">
+            <summary className="cursor-pointer text-muted-foreground hover:text-foreground">상태 구조 & 버튼 설명</summary>
+            <div className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1.5 text-muted-foreground">
+              <div>
+                <span className="text-foreground">items:</span>{' '}
+                <code className="px-1.5 py-0.5 bg-muted rounded text-lg font-mono">{'{ id, value }[]'}</code>
+              </div>
+              <div><span className="text-foreground">bumpTick:</span> tick += 1</div>
+              <div><span className="text-foreground">tick:</span> items와 무관한 카운터</div>
+              <div><span className="text-foreground">mutateOneItem:</span> items[0].value += 1</div>
+              <div><span className="text-foreground">filterEvenOnly:</span> 짝수만 보기 상태</div>
+              <div><span className="text-foreground">짝수만/전체:</span> 필터 상태 토글</div>
+            </div>
+          </details>
         </div>
       </div>
 
-      <main className="max-w-5xl mx-auto px-6 py-6">
-        {/* Cases */}
-        <div className="space-y-5">
-          <Case1 />
-          <Case2 />
-          <Case3 />
-          <Case4 />
-          <Case5 />
-          <Case6 />
-          <Case7 />
-        </div>
-
-        {/* Footer Table */}
-        <div className="mt-12 rounded-xl border border-border bg-card p-6">
-          <h3 className="text-lg font-bold text-foreground mb-5">
-            버튼별 예상 리렌더 동작
-          </h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-base">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="py-3 px-4 text-left font-semibold text-muted-foreground">Action</th>
-                  <th className="py-3 px-4 text-center font-semibold text-muted-foreground">Case 1</th>
-                  <th className="py-3 px-4 text-center font-semibold text-muted-foreground">Case 2</th>
-                  <th className="py-3 px-4 text-center font-semibold text-muted-foreground">Case 3</th>
-                  <th className="py-3 px-4 text-center font-semibold text-muted-foreground">Case 4</th>
-                  <th className="py-3 px-4 text-center font-semibold text-muted-foreground">Case 5</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b border-border/50">
-                  <td className="py-3 px-4 font-semibold">bumpTick</td>
-                  <td className="py-3 px-4 text-center"><span className="text-success font-bold text-lg">-</span></td>
-                  <td className="py-3 px-4 text-center"><span className="text-warning font-bold text-lg">O</span></td>
-                  <td className="py-3 px-4 text-center"><span className="text-success font-bold text-lg">-</span></td>
-                  <td className="py-3 px-4 text-center"><span className="text-success font-bold text-lg">-</span></td>
-                  <td className="py-3 px-4 text-center"><span className="text-success font-bold text-lg">-</span></td>
-                </tr>
-                <tr className="border-b border-border/50">
-                  <td className="py-3 px-4 font-semibold">mutateOneItem</td>
-                  <td className="py-3 px-4 text-center"><span className="text-warning font-bold text-lg">O</span></td>
-                  <td className="py-3 px-4 text-center"><span className="text-warning font-bold text-lg">O</span></td>
-                  <td className="py-3 px-4 text-center"><span className="text-warning font-bold text-lg">O</span></td>
-                  <td className="py-3 px-4 text-center"><span className="text-warning font-bold text-lg">O</span></td>
-                  <td className="py-3 px-4 text-center"><span className="text-warning font-bold text-lg">O</span></td>
-                </tr>
-                <tr>
-                  <td className="py-3 px-4 font-semibold">toggleFilter</td>
-                  <td className="py-3 px-4 text-center"><span className="text-warning font-bold text-lg">O</span></td>
-                  <td className="py-3 px-4 text-center"><span className="text-warning font-bold text-lg">O</span></td>
-                  <td className="py-3 px-4 text-center"><span className="text-warning font-bold text-lg">O</span></td>
-                  <td className="py-3 px-4 text-center"><span className="text-warning font-bold text-lg">O</span></td>
-                  <td className="py-3 px-4 text-center"><span className="text-warning font-bold text-lg">O</span></td>
-                </tr>
-              </tbody>
-            </table>
+      {/* Main Content - 2 Column Grid */}
+      <main className="max-w-6xl mx-auto px-4 py-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          {/* Left Column - Case 1-5 */}
+          <div className="space-y-3">
+            <Case1 />
+            <Case2 />
+            <Case3 />
+            <Case4 />
+            <Case5 />
           </div>
-          <p className="mt-5 text-sm text-muted-foreground">
-            <strong>O</strong> = 리렌더 발생, <strong>-</strong> = 리렌더 없음 / Case 6은 runDraftProbe 시에만 리렌더
-          </p>
+
+          {/* Right Column - Case 6, 7 + Summary */}
+          <div className="space-y-3">
+            <Case6 />
+            <Case7 />
+
+            {/* Summary Table */}
+            <div className="rounded-lg border border-border/50 bg-card/80 p-4">
+              <h3 className="text-xl font-semibold mb-3">버튼별 예상 리렌더</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-lg">
+                  <thead>
+                    <tr className="border-b border-border/50">
+                      <th className="py-1.5 px-2 text-left font-medium text-muted-foreground">Action</th>
+                      <th className="py-1.5 px-2 text-center font-medium text-muted-foreground">1</th>
+                      <th className="py-1.5 px-2 text-center font-medium text-muted-foreground">2</th>
+                      <th className="py-1.5 px-2 text-center font-medium text-muted-foreground">3</th>
+                      <th className="py-1.5 px-2 text-center font-medium text-muted-foreground">4</th>
+                      <th className="py-1.5 px-2 text-center font-medium text-muted-foreground">5</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-center">
+                    <tr className="border-b border-border/30">
+                      <td className="py-1.5 px-2 text-left font-medium">bumpTick</td>
+                      <td className="py-1.5 px-2 text-success">-</td>
+                      <td className="py-1.5 px-2 text-warning">O</td>
+                      <td className="py-1.5 px-2 text-success">-</td>
+                      <td className="py-1.5 px-2 text-success">-</td>
+                      <td className="py-1.5 px-2 text-success">-</td>
+                    </tr>
+                    <tr className="border-b border-border/30">
+                      <td className="py-1.5 px-2 text-left font-medium">mutateOneItem</td>
+                      <td className="py-1.5 px-2 text-warning">O</td>
+                      <td className="py-1.5 px-2 text-warning">O</td>
+                      <td className="py-1.5 px-2 text-warning">O</td>
+                      <td className="py-1.5 px-2 text-warning">O</td>
+                      <td className="py-1.5 px-2 text-warning">O</td>
+                    </tr>
+                    <tr>
+                      <td className="py-1.5 px-2 text-left font-medium">필터 토글</td>
+                      <td className="py-1.5 px-2 text-warning">O</td>
+                      <td className="py-1.5 px-2 text-warning">O</td>
+                      <td className="py-1.5 px-2 text-warning">O</td>
+                      <td className="py-1.5 px-2 text-warning">O</td>
+                      <td className="py-1.5 px-2 text-warning">O</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p className="mt-3 text-lg text-muted-foreground">
+                <span className="text-warning">O</span> = 리렌더 / <span className="text-success">-</span> = 스킵
+              </p>
+            </div>
+          </div>
         </div>
       </main>
     </div>
