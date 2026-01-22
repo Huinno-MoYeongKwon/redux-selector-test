@@ -1,0 +1,205 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - heading "Redux Selector Test" [level=1] [ref=e8]
+        - generic [ref=e9]: 리렌더 / createSelector / shallowEqual
+      - generic [ref=e10]:
+        - button "Switch to Light theme" [ref=e11] [cursor=pointer]:
+          - img [ref=e12]
+        - button "Switch to Dark theme" [ref=e18] [cursor=pointer]:
+          - img [ref=e19]
+        - button "Switch to System theme" [ref=e21] [cursor=pointer]:
+          - img [ref=e22]
+    - generic [ref=e24]:
+      - generic [ref=e25]:
+        - generic [ref=e26]: Size
+        - spinbutton [ref=e27]: "100"
+        - button "Set" [active] [ref=e28] [cursor=pointer]
+        - generic [ref=e29]: "100"
+      - generic [ref=e30]:
+        - generic [ref=e31]: Mode
+        - combobox [ref=e32] [cursor=pointer]:
+          - option "Simple" [selected]
+          - option "Medium"
+          - option "Deep"
+        - generic [ref=e33]: 2 fields
+      - generic [ref=e34]:
+        - button "bumpTick" [ref=e35] [cursor=pointer]
+        - button "mutateOneItem" [ref=e36] [cursor=pointer]
+        - button "짝수만 보기" [ref=e37] [cursor=pointer]
+      - generic [ref=e38]:
+        - generic [ref=e39]: "tick: 0"
+        - generic [ref=e40]: "보기: 전체"
+    - group [ref=e41]:
+      - generic "상태 구조 & 버튼 설명" [ref=e42] [cursor=pointer]
+  - main [ref=e43]:
+    - generic [ref=e44]:
+      - generic [ref=e45]:
+        - generic [ref=e46]:
+          - generic [ref=e47]:
+            - 'heading "Case 1: 기본 배열 반환" [level=3] [ref=e48]'
+            - generic [ref=e49]:
+              - code [ref=e50]: (s) => s.items.items
+              - text: "|equalityFn:"
+              - strong [ref=e51]: 없음
+          - generic [ref=e52]:
+            - generic [ref=e53]: const selector = (state) => state.items.items; useSelector(selector);
+            - generic [ref=e54]:
+              - generic [ref=e55]:
+                - generic [ref=e56]: Render
+                - generic [ref=e57]: "2"
+              - generic [ref=e58]:
+                - generic [ref=e59]: 실행시간
+                - generic [ref=e60]: 0.0μs
+              - generic [ref=e61]:
+                - generic [ref=e62]: Len
+                - generic [ref=e63]: "100"
+              - generic [ref=e64]:
+                - generic [ref=e65]: "[0].val"
+                - generic [ref=e66]: "0"
+            - generic [ref=e67]: 🔄 배열 크기 변경 → 새 배열 생성 → 리렌더
+        - generic [ref=e68]:
+          - generic [ref=e69]:
+            - 'heading "Case 2: 가공 배열 (메모이즈 X)" [level=3] [ref=e70]'
+            - generic [ref=e71]:
+              - code [ref=e72]: filter(...)
+              - text: "|매번 새 배열"
+          - generic [ref=e73]:
+            - generic [ref=e74]: "const selector = (state) => { return state.items.items.filter(() => true); // 매번 새 배열 }; useSelector(selector);"
+            - generic [ref=e75]:
+              - generic [ref=e76]:
+                - generic [ref=e77]: Render
+                - generic [ref=e78]: "2"
+              - generic [ref=e79]:
+                - generic [ref=e80]: 실행시간
+                - generic [ref=e81]: 0.0μs
+              - generic [ref=e82]:
+                - generic [ref=e83]: Len
+                - generic [ref=e84]: "100"
+              - generic [ref=e85]:
+                - generic [ref=e86]: "[0].val"
+                - generic [ref=e87]: "0"
+            - generic [ref=e88]: 🔄 배열 크기 변경 → 새 배열 생성 → 리렌더
+        - generic [ref=e89]:
+          - generic [ref=e90]:
+            - 'heading "Case 3: 가공 배열 + shallowEqual" [level=3] [ref=e91]'
+            - generic [ref=e92]:
+              - code [ref=e93]: filter + shallowEqual
+              - text: "|내용 같으면 스킵"
+          - generic [ref=e94]:
+            - generic [ref=e95]: "const selector = (state) => { return state.items.items.filter(() => true); }; useSelector(selector, shallowEqual); // 내용 비교"
+            - generic [ref=e96]:
+              - generic [ref=e97]:
+                - generic [ref=e98]: Render
+                - generic [ref=e99]: "2"
+              - generic [ref=e100]:
+                - generic [ref=e101]: 실행시간
+                - generic [ref=e102]: 0.0μs
+              - generic [ref=e103]:
+                - generic [ref=e104]: Len
+                - generic [ref=e105]: "100"
+              - generic [ref=e106]:
+                - generic [ref=e107]: "[0].val"
+                - generic [ref=e108]: "0"
+            - generic [ref=e109]: 🔄 배열 크기 변경 → shallowEqual 비교 시 길이 다름 → 리렌더
+        - generic [ref=e110]:
+          - generic [ref=e111]:
+            - 'heading "Case 4: createSelector" [level=3] [ref=e112]'
+            - generic [ref=e113]:
+              - code [ref=e114]: createSelector
+              - text: "|입력 동일시 캐시"
+          - generic [ref=e115]:
+            - generic [ref=e116]: "const selector = createSelector( [selectItems, selectFilterEvenOnly], (items, filter) => filter ? items.filter(...) : items ); useSelector(selector);"
+            - generic [ref=e117]:
+              - generic [ref=e118]:
+                - generic [ref=e119]: Render
+                - generic [ref=e120]: "2"
+              - generic [ref=e121]:
+                - generic [ref=e122]: 실행시간
+                - generic [ref=e123]: 0.0μs
+              - generic [ref=e124]:
+                - generic [ref=e125]: Len
+                - generic [ref=e126]: "100"
+              - generic [ref=e127]:
+                - generic [ref=e128]: "[0].val"
+                - generic [ref=e129]: "0"
+            - generic [ref=e130]: 🔄 items 참조 변경 → createSelector 입력 변경 → 재계산 → 리렌더
+        - generic [ref=e131]:
+          - generic [ref=e132]:
+            - 'heading "Case 5: createSelector + shallowEqual" [level=3] [ref=e133]'
+            - generic [ref=e134]:
+              - code [ref=e135]: createSelector + shallowEqual
+              - text: "|이중 보호"
+          - generic [ref=e136]:
+            - generic [ref=e137]: "const selector = createSelector( [selectItems, selectFilterEvenOnly], (items, filter) => filter ? items.filter(...) : items ); useSelector(selector, shallowEqual); // 이중 보호"
+            - generic [ref=e138]:
+              - generic [ref=e139]:
+                - generic [ref=e140]: Render
+                - generic [ref=e141]: "2"
+              - generic [ref=e142]:
+                - generic [ref=e143]: 실행시간
+                - generic [ref=e144]: 0.0μs
+              - generic [ref=e145]:
+                - generic [ref=e146]: Len
+                - generic [ref=e147]: "100"
+              - generic [ref=e148]:
+                - generic [ref=e149]: "[0].val"
+                - generic [ref=e150]: "0"
+            - generic [ref=e151]: 🔄 items 변경 → createSelector 재계산 → 새 결과 → 리렌더
+      - generic [ref=e152]:
+        - generic [ref=e153]:
+          - generic [ref=e154]:
+            - 'heading "Case 6: 벤치마크" [level=3] [ref=e155]'
+            - generic [ref=e156]: 각 방식의 실행 시간 비교|Run Benchmark로 측정
+          - generic [ref=e157]:
+            - generic [ref=e158]:
+              - generic [ref=e159]:
+                - generic [ref=e160]: 반복
+                - combobox "반복" [ref=e161] [cursor=pointer]:
+                  - option "100"
+                  - option "1,000" [selected]
+                  - option "5,000"
+                  - option "10,000"
+              - button "Run Benchmark" [ref=e162] [cursor=pointer]
+            - generic [ref=e163]: Run Benchmark를 클릭하면 결과가 여기에 표시됩니다.
+        - generic [ref=e164]:
+          - heading "버튼별 예상 리렌더" [level=3] [ref=e165]
+          - table [ref=e167]:
+            - rowgroup [ref=e168]:
+              - row "Action 1 2 3 4 5" [ref=e169]:
+                - columnheader "Action" [ref=e170]
+                - columnheader "1" [ref=e171]
+                - columnheader "2" [ref=e172]
+                - columnheader "3" [ref=e173]
+                - columnheader "4" [ref=e174]
+                - columnheader "5" [ref=e175]
+            - rowgroup [ref=e176]:
+              - row "bumpTick - O - - -" [ref=e177]:
+                - cell "bumpTick" [ref=e178]
+                - cell "-" [ref=e179]
+                - cell "O" [ref=e180]
+                - cell "-" [ref=e181]
+                - cell "-" [ref=e182]
+                - cell "-" [ref=e183]
+              - row "mutateOneItem O O O O O" [ref=e184]:
+                - cell "mutateOneItem" [ref=e185]
+                - cell "O" [ref=e186]
+                - cell "O" [ref=e187]
+                - cell "O" [ref=e188]
+                - cell "O" [ref=e189]
+                - cell "O" [ref=e190]
+              - row "필터 토글 - O O O O" [ref=e191]:
+                - cell "필터 토글" [ref=e192]
+                - cell "-" [ref=e193]
+                - cell "O" [ref=e194]
+                - cell "O" [ref=e195]
+                - cell "O" [ref=e196]
+                - cell "O" [ref=e197]
+          - generic [ref=e198]:
+            - paragraph [ref=e199]: O = 리렌더 / - = 스킵
+            - paragraph [ref=e200]: 실행시간 = useSelector 내부 함수 실행 시간 (μs, 1ms = 1,000μs)
+```
